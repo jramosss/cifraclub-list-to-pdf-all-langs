@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
-
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/signintech/gopdf"
 )
 
 const baseURL = "https://www.cifraclub.com"
@@ -52,19 +54,66 @@ func sanitizeSongLink(songURL string) string {
 	return songURL
 }
 
-func scrapeSongDetails(songURL string) string {
+func scrapeSongDetails(songURL string, wg *sync.WaitGroup, ch chan<- string) {
+	defer wg.Done()
+	log.Println("Scraping song: ", songURL)
 	doc := fetch(baseURL + songURL)
 	folhas := doc.Find("div").FilterFunction(func(i int, s *goquery.Selection) bool {
 		class, _ := s.Attr("class")
-		log.Printf("class: %s", class)
 		return class != "" && class[:5] == "folha"
 	})
-	return folhas.Text()
+	html, err := folhas.Html()
+	if err != nil {
+		log.Fatal(err)
+	}
+	ch <- html
+}
+
+func scrapeSongs(listURL string) ([]string, error) {
+	songLinks := getSongsLinksInList(listURL)
+
+	var wg sync.WaitGroup
+	ch := make(chan string)
+
+	for _, link := range songLinks {
+		wg.Add(1)
+		go scrapeSongDetails(sanitizeSongLink(link), &wg, ch)
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	var songDetails []string
+	for title := range ch {
+		songDetails = append(songDetails, title)
+	}
+
+	return songDetails, nil
+}
+
+func createPDF(songs []string) {
+	// Create pdf with all songs which are html strings
+	pdf := gopdf.GoPdf{}
+	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+	pdf.AddPage()
+	for _, song := range songs {
+		pdf.SetX(10)
+		pdf.SetY(10)
+		pdf.Cell(nil, song)
+		pdf.AddPage()
+	}
+	pdf.WritePdf("songs.pdf")
 }
 
 func main() {
-	songs := getSongsLinksInList("/musico/552807671/repertorio/favoritas/")
-	log.Println(songs[0])
-	song_details := scrapeSongDetails(sanitizeSongLink((songs[0])))
-	log.Println(songs[0], song_details)
+	start := time.Now()
+	songs, err := scrapeSongs("/musico/552807671/repertorio/favoritas/")
+	if err != nil {
+		log.Fatal(err)
+	}
+	duration := time.Since(start)
+	log.Println("Scraped", len(songs), "songs in", duration)
+	createPDF(songs)
 }
