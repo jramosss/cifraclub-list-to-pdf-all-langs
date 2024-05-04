@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -56,7 +57,6 @@ func sanitizeSongLink(songURL string) string {
 
 func scrapeSongDetails(songURL string, wg *sync.WaitGroup, ch chan<- string) {
 	defer wg.Done()
-	log.Println("Scraping song: ", songURL)
 	doc := fetch(baseURL + songURL)
 	folhas := doc.Find("div").FilterFunction(func(i int, s *goquery.Selection) bool {
 		class, _ := s.Attr("class")
@@ -109,11 +109,20 @@ func createPDF(songs []string) {
 
 func main() {
 	start := time.Now()
-	songs, err := scrapeSongs("/musico/552807671/repertorio/favoritas/")
+	songs, err := scrapeSongs("/musico/551928421/repertorio/favoritas/")
 	if err != nil {
 		log.Fatal(err)
 	}
 	duration := time.Since(start)
 	log.Println("Scraped", len(songs), "songs in", duration)
-	createPDF(songs)
+	file, err := os.Create("songs.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	for _, song := range songs {
+		file.WriteString(song)
+	}
+
+	// createPDF(songs)
 }

@@ -1,4 +1,4 @@
 # How to run
 
-`go build`
-`./cifraclub-list-to-pdf`
+`go build -o build`  
+`./build/cifraclub-list-to-pdf`
