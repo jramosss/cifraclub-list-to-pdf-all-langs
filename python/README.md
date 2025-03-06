@@ -4,9 +4,6 @@ If you are a musician, you probably know the website [Cifraclub](https://www.cif
 
 ## How to use
 - Install requirements
-- Install [wkhtmltopdf](https://wkhtmltopdf.org/) 
-    - On Ubuntu: `sudo apt-get install wkhtmltopdf`
-    - On Windows: Download the installer from the website
-    - On Mac: `brew install homebrew/cask/wkhtmltopdf`
-- Run the script and insert any list of songs from the website. For example: `https://www.cifraclub.com/musico/551928421/repertorio/favoritas/`
-    - The script wont check if the URL is valid, i'm lazy
+- Follow the steps to install [Playwright](https://playwright.dev/python/docs/intro)
+- Change the url inside test_main.py to the url of your list
+- Run `pytest`
