@@ -4,6 +4,7 @@ import requests
 
 from utils import create_print_url, generate_html
 
+MAX_WORKERS = 10
 
 class Scraper:
     @staticmethod
@@ -21,7 +22,7 @@ class Scraper:
         return str(content.decode(4, "utf-8"))
 
     def scrape_pages(self, urls: list[str]):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             futures = [executor.submit(self.scrape_page, url) for url in urls]
             return [future.result() for future in concurrent.futures.as_completed(futures)]
 
@@ -30,14 +31,3 @@ class Scraper:
         contents = self.scrape_pages(urls)
         return generate_html(contents)
 
-
-if __name__ == "__main__":
-    # url = "https://www.cifraclub.com/musico/551928421/repertorio/favoritas/" # large
-    url = "https://www.cifraclub.com/musico/551928421/repertorio/12409416/" # small
-    scraper = Scraper()
-    result = scraper.scrape(url)
-
-    with open(f"generated.html", "w", encoding="utf-8") as f:
-        f.write(result)
-
-    print("Proceso completado. Se generó 'merged_results.html'")
