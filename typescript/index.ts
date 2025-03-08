@@ -1,11 +1,19 @@
-import { htmlToPdf } from './src/pdf';
-import Scraper from './src/scraper';
+import { generate } from './src/routes';
 
+Bun.serve({
+    routes: {
+        "/health": new Response("OK"),
+        '/generate/:id': {
+            POST: generate
+        },
+        // '/ws/:id': () => {},
+    },
+    port: 8000,
+    fetch: async (request: Request) => {
+        const { url, method, headers, body } = request;
+        console.log({ url, method, headers, body });
+        return new Response('Not Found', { status: 404 });
+    }
+})
 
-async function main() {
-    const scraper = new Scraper('1');
-    const result = await scraper.scrape('https://www.cifraclub.com/musico/551928421/repertorio/12409416/');
-    await htmlToPdf(result, 'output.pdf');
-}
-
-main().then(() => console.log('done')).catch(console.error);
+console.log('Server started on port 8000');
