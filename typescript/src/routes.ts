@@ -10,9 +10,7 @@ export async function generate(request: BunRequest) {
     const htmlContent = await scraper.scrape(list_url);
     const pdfPath = `./static/${connectionId}.pdf`;
 
-    console.log('Finished scraping')
     await htmlToPdf(htmlContent, pdfPath);
-    console.log('Finished generating pdf')
 
     return new Response(JSON.stringify({ url: pdfPath }), {
         headers: {
