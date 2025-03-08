@@ -1,23 +1,25 @@
 import type { SocketMessage } from './types';
 import { generate } from './src/routes';
-import StateManagerSingleton from './src/stateManager';
 import { getScraper } from './src/utils/utils';
 
-// @ts-ignore
+const STATIC_PATH = './static';
+
+// @ts-ignore - bun messed up with websockets
 Bun.serve({
     routes: {
-        "/health": new Response("OK"),
         '/generate/:id': {
             POST: generate
         },
-        // '/ws/:id': () => {},
     },
     port: 8000,
     fetch: async (request, server) => {
         if (server.upgrade(request)) {
             return;
         }
-        return new Response('Not Found', { status: 404 });
+
+        const filePath = STATIC_PATH + new URL(request.url).pathname;
+        const file = Bun.file(filePath);
+        return new Response(file);
     },
     websocket: {
         async message(ws, msg: SocketMessage) {
@@ -27,13 +29,7 @@ Bun.serve({
                 return ws.send(JSON.stringify({ error: 'Scraper not found' }))
             }
             scraper.setSocket(ws)
-        }, // a message is received
-        open(ws) {
-            console.log('Socket opened');
-        }, // a socket is opened
-        close(ws, code, message) {
-            console.log('Socket closed:', code, message);
-        }, // a socket is closed
+        },
     }
 })
 
