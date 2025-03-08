@@ -7,3 +7,8 @@ export type GenerateRequestParams = BunRequest & {
     listUrl: string;
     json: () => Promise<{ listUrl: string }>;
 }
+
+export type SocketMessage = string & {
+    connection_id: string;
+    message: string;
+}

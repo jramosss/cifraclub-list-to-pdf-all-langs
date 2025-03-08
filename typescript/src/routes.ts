@@ -5,6 +5,7 @@ import { getScraper } from "./utils/utils";
 export async function generate(request: BunRequest) {
     // @ts-ignore
     const connectionId = request.params.id;
+    console.log('Generating PDF for connection', connectionId);
     const { list_url } = await request.json();
     const scraper = getScraper(connectionId);
     const htmlContent = await scraper.scrape(list_url);

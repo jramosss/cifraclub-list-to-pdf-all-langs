@@ -1,15 +1,22 @@
 import * as cheerio from 'cheerio';
 import { createPrintUrl, generateHtml } from './utils/utils';
+import type { ServerWebSocket } from 'bun';
 
 export default class Scraper {
     private id: string;
+    private socket: ServerWebSocket<unknown> | null;
     private total_songs: number;
     private progress: number;
 
     constructor(_id: string) {
         this.id = _id;
+        this.socket = null;
         this.total_songs = 0;
         this.progress = 0;
+    }
+
+    public setSocket = (socket: ServerWebSocket<unknown>) => {
+        this.socket = socket;
     }
 
     private getPage = async (url: string) => {
@@ -42,7 +49,13 @@ export default class Scraper {
     }
 
     private scrapePages = async (urls: string[]) => {
-        return Promise.all(urls.map(url => this.scrapePage(url)));
+        return Promise.all(urls.map(async url => {
+            const page = await this.scrapePage(url)
+            if (this.socket) {
+                this.socket.send(JSON.stringify({ progress: this.progress, total: this.total_songs }));
+            }
+            return page;
+        }));
     }
 
     public scrape = async (listUrl: string) => {
