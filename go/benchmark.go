@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func main() {
+func _main() {
 	urls := []string{
 		"/musico/552807671/repertorio/favoritas/", // Short, 5 songs
 		"/musico/551928421/repertorio/favoritas/", // Long, more than 150 songs

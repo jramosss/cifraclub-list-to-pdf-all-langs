@@ -118,7 +118,7 @@ func scrapeSongsBenchmark(path string) (time.Duration, int) {
 	return duration, songsCount
 }
 
-func _main() {
+func main() {
 	start := time.Now()
 	songs, err := scrapeSongs("/musico/551928421/repertorio/favoritas/")
 	if err != nil {
@@ -135,5 +135,5 @@ func _main() {
 		file.WriteString(song)
 	}
 
-	// createPDF(songs)
+	createPDF(songs)
 }
