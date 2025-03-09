@@ -1,4 +1,5 @@
 import json
+import re
 import os
 import subprocess
 import matplotlib.pyplot as plt
@@ -58,15 +59,31 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
     plt.tight_layout()
     plt.savefig(filepath)
 
+def extract_json_from_string(input_string):
+    json_pattern = r'\{.*?\}'
+
+    json_strings = re.findall(json_pattern, input_string)
+
+    json_objects = []
+    for json_string in json_strings:
+        try:
+            json_object = json.loads(json_string)
+            json_objects.append(json_object)
+        except json.JSONDecodeError:
+            continue
+
+    return json_objects
+
 def get_benchmarks():
     folders = list(filter(lambda x: os.path.isdir(x), os.listdir('languages')))
     benchmarks: list[Benchmark] = []
-    for language in ["typescript"]:
-        process = subprocess.run(f"cd languages/{language} && bash run_benchmark.sh", capture_output=True, shell=True)
-        out = process.stdout.decode('utf-8')
-        parsed_output = json.loads(out)
-        benchmark = Benchmark(language, parsed_output['total_songs'], parsed_output['scrape_time'], parsed_output['pdf_generate_time'])
-        benchmarks.append(benchmark)
+    for language in ["python"]:
+        subprocess.run(f"cd languages/{language} && docker build -t {language}_benchmark . && docker run {language}_benchmark", shell=True)
+        results = json.load(open(f"languages/{language}/benchmarks.json", "r"))
+        for benchmark_result in results:
+            print(benchmark_result)
+            benchmark = Benchmark(language, benchmark_result['total_songs'], benchmark_result['scrape_time'], benchmark_result['pdf_generate_time'])
+            benchmarks.append(benchmark)
     return benchmarks
 
 

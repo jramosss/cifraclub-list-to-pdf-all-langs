@@ -1,6 +1,7 @@
 import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
+import time
 
 from utils import create_print_url, generate_html
 
@@ -21,13 +22,16 @@ class Scraper:
         content = soup.find(class_="pages")
         return str(content.decode(4, "utf-8"))
 
-    def scrape_pages(self, urls: list[str]):
+    def scrape_pages(self, urls: list[str]) -> list[str]:
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             futures = [executor.submit(self.scrape_page, url) for url in urls]
             return [future.result() for future in concurrent.futures.as_completed(futures)]
 
     def scrape(self, url: str):
+        start = time.time()
         urls = self.get_urls_from_list(url)
         contents = self.scrape_pages(urls)
-        return generate_html(contents)
-
+        html = generate_html(contents)
+        end = time.time()
+        scrape_time = (end - start) * 1000
+        return html, len(urls), scrape_time
