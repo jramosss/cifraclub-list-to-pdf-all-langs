@@ -5,7 +5,7 @@ import type { ServerWebSocket } from "bun";
 export default class Scraper {
 	private id: string;
 	private socket: ServerWebSocket<unknown> | null;
-	private total_songs: number;
+	public total_songs: number;
 	private progress: number;
 
 	constructor(_id: string) {
