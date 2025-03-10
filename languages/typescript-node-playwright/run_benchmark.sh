@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IMAGE_NAME="typescript_benchmark"
-CONTAINER_NAME="typescript_benchmark_runner"
+IMAGE_NAME="typescript_node_benchmark"
+CONTAINER_NAME="typescript_node_benchmark_runner"
 OUTPUT_FILE="benchmarks.json"
 WORKDIR="/app"
 

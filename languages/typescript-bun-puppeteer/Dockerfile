@@ -30,4 +30,4 @@ COPY . .
 
 RUN bun install
 
-CMD ["bun", "run", "benchmark"]
+CMD ["bun", "run", "start"]

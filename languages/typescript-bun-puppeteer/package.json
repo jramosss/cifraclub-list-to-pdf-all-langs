@@ -1,11 +1,10 @@
 {
 	"name": "typescript",
-	"module": "index.ts",
+	"module": "benchmark.ts",
 	"type": "module",
 	"scripts": {
-		"start": "bun index.ts",
+		"start": "bun benchmark.ts",
 		"build": "tsc --noResolve --noCheck --outDir dist src/*.ts",
-		"benchmark": "bun benchmark.ts",
 		"dev": "bun --hot run index.ts"
 	},
 	"devDependencies": {

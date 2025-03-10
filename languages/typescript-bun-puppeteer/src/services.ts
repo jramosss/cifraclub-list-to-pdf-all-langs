@@ -1,9 +1,9 @@
 import { htmlToPdf } from "./pdf";
-import { getScraper } from "./utils/utils";
+import Scraper from "./scraper";
 
 export async function scrapeAndGenerate(connectionId: string, listUrl: string) {
 	const scraperStart = Date.now();
-	const scraper = getScraper(connectionId);
+	const scraper = new Scraper();
 	const htmlContent = await scraper.scrape(listUrl);
 	const scraperEnd = Date.now();
 	const pdfFileName = `${connectionId}.pdf`;
