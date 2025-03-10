@@ -1,0 +1,24 @@
+{
+  "name": "typescript-node-playwright",
+  "version": "1.0.0",
+  "description": "## How to run - `bun install` - `bun start`",
+  "main": "benchmark.js",
+  "scripts": {
+    "build-and-run": "tsc --outDir dist ./benchmark.ts && node dist/benchmark.js",
+    "build": "tsc --outDir dist ./benchmark.ts",
+    "start": "node dist/benchmark.js",
+    "dev": "nodemon src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "express": "^4.21.2",
+    "playwright": "^1.51.0",
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10"
+  }
+}

@@ -107,7 +107,7 @@ func createPDF(songs []string) {
 	pdf.WritePdf("songs.pdf")
 }
 
-func scrapeSongsBenchmark(path string) (time.Duration, int) {
+func scrapeSongsBenchmark(path string) (time.Duration, int, []string) {
 	start := time.Now()
 	songs, err := scrapeSongs(path)
 	if err != nil {
@@ -115,10 +115,10 @@ func scrapeSongsBenchmark(path string) (time.Duration, int) {
 	}
 	duration := time.Since(start)
 	songsCount := len(songs)
-	return duration, songsCount
+	return duration, songsCount, songs
 }
 
-func main() {
+func _main() {
 	start := time.Now()
 	songs, err := scrapeSongs("/musico/551928421/repertorio/favoritas/")
 	if err != nil {
