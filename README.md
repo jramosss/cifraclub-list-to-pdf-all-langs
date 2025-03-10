@@ -9,3 +9,7 @@ I will be documentating my journey in this repository, so expect big things.
 ## Performance comparision between languages
 
 ![Comparision between languages](./comparision.png)
+
+## TO-DOS:
+- Prettier CLI
+- More languages
