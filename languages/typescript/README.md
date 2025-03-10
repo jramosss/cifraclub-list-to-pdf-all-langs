@@ -1,4 +1,4 @@
-# Cifraclub to PDF - Typescript w bun
+# Cifraclub to PDF - Typescript w bun + puppeteer
 
 ## How to run
 - `bun install`

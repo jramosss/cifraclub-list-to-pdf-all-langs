@@ -59,21 +59,6 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
     plt.tight_layout()
     plt.savefig(filepath)
 
-def extract_json_from_string(input_string: str):
-    json_pattern = r'\{.*?\}'
-
-    json_strings = re.findall(json_pattern, input_string)
-
-    json_objects = []
-    for json_string in json_strings:
-        try:
-            json_object = json.loads(json_string)
-            json_objects.append(json_object)
-        except json.JSONDecodeError:
-            continue
-
-    return json_objects
-
 def get_benchmarks():
     folders = list(filter(lambda x: os.path.isdir(x), os.listdir('languages')))
     benchmarks: list[Benchmark] = []
