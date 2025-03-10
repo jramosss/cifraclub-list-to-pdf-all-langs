@@ -1,4 +1,5 @@
 import { scrapeAndGenerate } from "./src/services";
+import fs from "fs";
 
 function parseAsJson(obj: object) {
   return JSON.stringify(obj, null, 2);
@@ -6,10 +7,12 @@ function parseAsJson(obj: object) {
 
 export default async function benchmark() {
   const resultTiny = await scrapeAndGenerate("tiny", "https://www.cifraclub.com/musico/551928421/repertorio/12409416/");
-  console.log(parseAsJson(resultTiny));
-
   const resultLarge = await scrapeAndGenerate("large", "https://www.cifraclub.com/musico/551928421/repertorio/favoritas/");
-  console.log(resultLarge);
+
+  fs.writeFileSync("benchmarks.json", parseAsJson([
+    resultTiny,
+    resultLarge
+  ]));
 }
 
 benchmark().then(() => console.log(""));

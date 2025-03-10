@@ -1,8 +1,24 @@
 import json
 import time
+import re
 
 from pdf import html_to_pdf
 from scraper import Scraper
+
+def extract_json_from_string(input_string):
+    json_pattern = r'\{.*?\}'
+
+    json_strings = re.findall(json_pattern, input_string)
+
+    json_objects = []
+    for json_string in json_strings:
+        try:
+            json_object = json.loads(json_string)
+            json_objects.append(json_object)
+        except json.JSONDecodeError:
+            continue
+
+    return json_objects
 
 def benchmark():
     urls = [

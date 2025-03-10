@@ -59,7 +59,7 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
     plt.tight_layout()
     plt.savefig(filepath)
 
-def extract_json_from_string(input_string):
+def extract_json_from_string(input_string: str):
     json_pattern = r'\{.*?\}'
 
     json_strings = re.findall(json_pattern, input_string)
@@ -77,11 +77,10 @@ def extract_json_from_string(input_string):
 def get_benchmarks():
     folders = list(filter(lambda x: os.path.isdir(x), os.listdir('languages')))
     benchmarks: list[Benchmark] = []
-    for language in ["python"]:
-        subprocess.run(f"cd languages/{language} && docker build -t {language}_benchmark . && docker run {language}_benchmark", shell=True)
-        results = json.load(open(f"languages/{language}/benchmarks.json", "r"))
+    for language in ["python", "typescript"]:
+        subprocess.run(f"cd languages/{language} && chmod +x run_benchmark.sh && bash run_benchmark.sh", shell=True)
+        results = json.load(open(f"languages/{language}/benchmarks.json"))
         for benchmark_result in results:
-            print(benchmark_result)
             benchmark = Benchmark(language, benchmark_result['total_songs'], benchmark_result['scrape_time'], benchmark_result['pdf_generate_time'])
             benchmarks.append(benchmark)
     return benchmarks

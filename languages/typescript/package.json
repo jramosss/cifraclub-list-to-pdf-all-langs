@@ -4,7 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"start": "bun index.ts",
-		"build": "tsc",
+		"build": "tsc --noResolve --noCheck --outDir dist src/*.ts",
+		"benchmark": "bun benchmark.ts",
 		"dev": "bun --hot run index.ts"
 	},
 	"devDependencies": {
