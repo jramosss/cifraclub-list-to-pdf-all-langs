@@ -1,9 +1,14 @@
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright, Playwright
 
-def html_to_pdf(html: str, pdf_path: str):
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        page.set_content(html)
-        page.pdf(path=pdf_path)
-        browser.close()
+
+async def playwright_pdf_generator(playwright: Playwright, html: str, pdf_path: str):
+    browser = await playwright.chromium.launch()
+    page = await browser.new_page()
+    await page.set_content(html)
+    await page.pdf(path=pdf_path)
+    await browser.close()
+
+
+async def html_to_pdf(html: str, pdf_path: str):
+    async with async_playwright() as p:
+        await playwright_pdf_generator(p, html, pdf_path)

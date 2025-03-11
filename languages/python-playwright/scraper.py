@@ -1,37 +1,42 @@
-import concurrent.futures
+import asyncio
+import aiohttp
 from bs4 import BeautifulSoup
-import requests
-import time
+
 
 from utils import create_print_url, generate_html
 
-MAX_WORKERS = 10
 
 class Scraper:
-    @staticmethod
-    def get_urls_from_list(list_url: str):
-        raw_html = requests.get(list_url).text
-        soup = BeautifulSoup(raw_html, "html.parser")
-        list_element = soup.find(class_="list-links list-musics")
-        return [create_print_url(el["href"]) for el in list_element.find_all("a")]
+    def __init__(self):
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False))
 
-    @staticmethod
-    def scrape_page(url: str):
-        raw_html = requests.get(url).text
-        soup = BeautifulSoup(raw_html, "html.parser")
+    async def teardown(self):
+        await self.session.close()
+
+    async def get_soup(self, url: str) -> BeautifulSoup:
+        async with self.session.get(url) as response:
+            raw_html = await response.text()
+        return BeautifulSoup(raw_html, "html.parser")
+
+    async def get_urls_from_list(self, list_url: str) -> list[str]:
+        soup = await self.get_soup(list_url)
+        list_element = soup.find(class_="list-links list-musics")
+        return [
+            create_print_url(el["href"]) for el in list_element.find_all("a")
+        ]
+
+    async def scrape_page(self, url: str) -> str:
+        soup = await self.get_soup(url)
         content = soup.find(class_="pages")
         return str(content.decode(4, "utf-8"))
 
-    def scrape_pages(self, urls: list[str]) -> list[str]:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = [executor.submit(self.scrape_page, url) for url in urls]
-            return [future.result() for future in concurrent.futures.as_completed(futures)]
+    async def scrape_pages(self, urls: list[str]) -> list[str]:
+        tasks = [self.scrape_page(url) for url in urls]
+        return await asyncio.gather(*tasks)
 
-    def scrape(self, url: str):
-        start = time.time()
-        urls = self.get_urls_from_list(url)
-        contents = self.scrape_pages(urls)
+    async def scrape(self, url: str):
+        urls = await self.get_urls_from_list(url)
+        contents = await self.scrape_pages(urls)
         html = generate_html(contents)
-        end = time.time()
-        scrape_time = (end - start) * 1000
-        return html, len(urls), scrape_time
+        return html, len(urls)
+
