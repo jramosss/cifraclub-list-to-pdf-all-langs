@@ -35,7 +35,7 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
             data_pdf[lang].append(benchmark.pdf_generate_time if benchmark else 0)
 
     x = np.arange(len(songs))
-    bar_width = 0.2
+    bar_width = 0.1
 
     fig, axs = plt.subplots(1, 2, figsize=(14, 6))
 
