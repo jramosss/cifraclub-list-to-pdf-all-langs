@@ -63,6 +63,7 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
 
 def run_benchmark(language: str, generate: bool) -> List[Benchmark]:
     if generate:
+        print(f"Running benchmarks for {language}")
         subprocess.run(
             f"cd languages/{language} && chmod +x run_benchmark.sh && bash run_benchmark.sh",
             shell=True,
@@ -80,17 +81,14 @@ def run_benchmark(language: str, generate: bool) -> List[Benchmark]:
 
 
 def get_benchmarks(*, generate: bool = True):
-    folders = list(filter(lambda x: os.path.isdir(x), os.listdir("languages")))
+    folders = list(
+        filter(lambda x: os.path.isdir(f"languages/{x}"), os.listdir("languages"))
+    )
     benchmarks: list[Benchmark] = []
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [
-            executor.submit(run_benchmark, language, generate)
-            for language in [
-                "python-playwright",
-                "typescript-bun-puppeteer",
-                "typescript-node-playwright",
-            ]
+            executor.submit(run_benchmark, language, generate) for language in folders
         ]
         for future in concurrent.futures.as_completed(futures):
             benchmarks.extend(future.result())
