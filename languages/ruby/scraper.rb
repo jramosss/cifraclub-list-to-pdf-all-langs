@@ -10,13 +10,10 @@ class Scraper
 
     def get_urls_from_list(url)
         page = get_page(url)
-        urls = []
-        # find the ol tag element with class=list-links list-musics
         list = page.css('ol.list-links.list-musics')
-        list.css('li').each do |li|
-            urls << Utils.create_print_url(li.css('a').attr('href').value)
+        list.css('li').map do |li|
+            Utils.create_print_url(li.css('a').attr('href').value)
         end
-        urls
     end
 
     def scrape_page(url)
@@ -38,6 +35,6 @@ class Scraper
     def scrape(url)
         urls = get_urls_from_list(url)
         pages = scrape_pages(urls)
-        Utils.generate_html(pages)
+        return Utils.generate_html(pages), urls.length()
     end
 end
