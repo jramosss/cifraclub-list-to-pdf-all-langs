@@ -110,14 +110,12 @@ public class Scraper {
         return results.toArray(new String[0]);
     }
 
-    public String scrape(String listUrl) {
-        try {
-            var urls = getUrlsFromList(listUrl);
-            var songs = scrapeSongs(urls);
-            return Utils.generateHtml(songs);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+    public ScrapingResult scrape(String listUrl) throws IOException {
+        var scrapeStart = System.currentTimeMillis();
+        var urls = getUrlsFromList(listUrl);
+        var songs = scrapeSongs(urls);
+        var scrapeEnd = System.currentTimeMillis();
+        // so annoying that if i want to return multiple values i have to create a class
+        return new ScrapingResult(Utils.generateHtml(songs), scrapeEnd - scrapeStart, songs.length);
     }
 }
