@@ -40,7 +40,6 @@ public class Main {
             benchmarkResults.add(benchmarkResult);
         }
 
-        // write the array as a json in a file called benchmarks.json in root folder
         writeBenchmarkResultsToJson(benchmarkResults, "benchmarks.json");
     }
 }
