@@ -8,14 +8,15 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         var scraper = new Scraper();
         try {
+            var scrapeStart = System.currentTimeMillis();
             var htmlContent = scraper.scrape("https://www.cifraclub.com/musico/551928421/repertorio/12409416/");
-            // write songs to an html file
-            BufferedWriter writer = new BufferedWriter(new FileWriter("test.html"));
-            writer.write(String.join("", htmlContent));
+            var scrapeEnd = System.currentTimeMillis();
 
-            writer.close();
+            Pdf.htmlToPdf(htmlContent, "test.pdf");
         } catch (IOException e) {
             System.out.println("Failed to get page");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

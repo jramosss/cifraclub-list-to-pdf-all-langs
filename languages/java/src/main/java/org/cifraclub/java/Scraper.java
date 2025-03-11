@@ -55,7 +55,15 @@ public class Scraper {
         var page = doc.selectFirst("div[class=pages]");
         assert page != null;
         var html = page.outerHtml();
-        return new String(html.getBytes(StandardCharsets.UTF_8));
+        html = new String(html.getBytes(StandardCharsets.UTF_8));
+        html = removeImgTags(html);
+        return html;
+    }
+
+    private String removeImgTags(String html) {
+        var jsoupObject = Jsoup.parse(html);
+        jsoupObject.select("img").remove();
+        return jsoupObject.outerHtml();
     }
 
     // look at all this boilerplate code, just to achieve parallelism
