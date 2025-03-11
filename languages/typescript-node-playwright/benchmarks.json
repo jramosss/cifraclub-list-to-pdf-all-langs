@@ -2,13 +2,13 @@
   {
     "pdfFileName": "tiny.pdf",
     "total_songs": 17,
-    "scrape_time": 483,
-    "pdf_generate_time": 619
+    "scrape_time": 595,
+    "pdf_generate_time": 1167
   },
   {
     "pdfFileName": "large.pdf",
     "total_songs": 275,
-    "scrape_time": 1828,
-    "pdf_generate_time": 5178
+    "scrape_time": 1634,
+    "pdf_generate_time": 5265
   }
 ]
