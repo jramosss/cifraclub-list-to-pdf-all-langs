@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"time"
 )
@@ -26,26 +27,31 @@ func saveResults(results []result) error {
 
 func main() {
 	urls := []string{
-		"/musico/551928421/repertorio/favoritas/", // large
-		"/musico/551928421/repertorio/12409416/",  // small
+		"https://cifraclub.com/musico/551928421/repertorio/favoritas/", // large
+		"https://cifraclub.com/musico/551928421/repertorio/12409416/",  // small
 	}
 
 	results := make([]result, len(urls))
 
-	for _, url := range urls {
-		duration, songsCount, songs := scrapeSongsBenchmark(url)
-		print("Scrape time: ", duration, " songs: ", songsCount)
-		print(songs)
+	for index, url := range urls {
+		scrapeStart := time.Now()
+		songs, err := scrapeSongs(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		htmlContent := generateHtml(songs)
+		scrape_time := time.Since(scrapeStart)
+
 		pdfStart := time.Now()
-		createPDF(songs)
-		pdfEnd := time.Now()
+		createPDF(htmlContent, "output"+string(index)+".pdf")
+		pdf_generate_time := time.Since(pdfStart)
 
 		results = append(results, result{
-			total_songs:       songsCount,
-			scrape_time:       duration,
-			pdf_generate_time: pdfEnd.Sub(pdfStart),
+			total_songs:       len(songs),
+			scrape_time:       scrape_time,
+			pdf_generate_time: pdf_generate_time,
 		})
 	}
 
-	// saveResults(results)
+	saveResults(results)
 }

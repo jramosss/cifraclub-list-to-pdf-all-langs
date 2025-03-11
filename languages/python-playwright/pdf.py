@@ -5,7 +5,7 @@ async def playwright_pdf_generator(playwright: Playwright, html: str, pdf_path: 
     browser = await playwright.chromium.launch()
     page = await browser.new_page()
     await page.set_content(html)
-    await page.pdf(path=pdf_path)
+    await page.pdf(path=pdf_path, format="A4")
     await browser.close()
 
 

@@ -28,6 +28,9 @@ class Scraper:
     async def scrape_page(self, url: str) -> str:
         soup = await self.get_soup(url)
         content = soup.find(class_="pages")
+        images = content.find_all("img")
+        for img in images:
+            img.decompose()
         return str(content.decode(4, "utf-8"))
 
     async def scrape_pages(self, urls: list[str]) -> list[str]:
