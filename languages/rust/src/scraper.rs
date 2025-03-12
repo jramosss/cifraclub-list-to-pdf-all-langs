@@ -1,5 +1,6 @@
-use std::fmt::Debug;
 use scraper::Html;
+use tokio::task;
+use futures::future::join_all;
 use crate::utils::Utils;
 
 pub async fn get_scraper_object(url: String) -> Html {
@@ -29,4 +30,18 @@ pub async fn scrape_page(url: String) -> String {
     let selector = scraper_object.select(&page_element);
 
     selector.map(|element| element.html()).collect::<Vec<_>>().join("")
+}
+
+pub async fn scrape_pages(urls: Vec<String>) -> Vec<String> {
+    let tasks: Vec<_> = urls.into_iter().map(|url| task::spawn(scrape_page(url))).collect();
+
+    let results = join_all(tasks).await;
+
+    results.into_iter().filter_map(|res| res.ok()).collect()
+}
+
+pub async fn scrape(url: String) -> String {
+    let urls = get_urls_from_list(url).await;
+    let pages = scrape_pages(urls).await;
+    Utils::generate_html(pages)
 }
