@@ -3,6 +3,11 @@ use tokio::task;
 use futures::future::join_all;
 use crate::utils::Utils;
 
+pub struct ScrapeResult {
+    pub html: String,
+    pub total_songs: u32,
+}
+
 pub async fn get_scraper_object(url: String) -> Html {
     let body = reqwest::get(&url).await.unwrap().text().await.unwrap();
     Html::parse_document(&body)
@@ -40,8 +45,12 @@ pub async fn scrape_pages(urls: Vec<String>) -> Vec<String> {
     results.into_iter().filter_map(|res| res.ok()).collect()
 }
 
-pub async fn scrape(url: String) -> String {
+pub async fn scrape(url: String) -> ScrapeResult {
     let urls = get_urls_from_list(url).await;
     let pages = scrape_pages(urls).await;
-    Utils::generate_html(pages)
+    let html = Utils::generate_html(&pages);
+    ScrapeResult {
+        html,
+        total_songs: pages.len() as u32,
+    }
 }

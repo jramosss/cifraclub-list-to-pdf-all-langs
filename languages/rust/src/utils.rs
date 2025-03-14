@@ -25,7 +25,7 @@ impl Utils {
         html.replace("tam_a4", "")
     }
 
-    pub fn generate_html(contents: Vec<String>) -> String {
+    pub fn generate_html(contents: &Vec<String>) -> String {
         format!(
             r#"
             <html>
