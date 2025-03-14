@@ -21,11 +21,10 @@ FROM debian:bullseye-slim
 
 # Instalar wkhtmltopdf y dependencias
 RUN apt-get update && apt-get install -y \
-    wkhtmltopdf \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar el binario compilado desde la imagen de compilación
-COPY --from=builder /app/target/release/build /usr/local/bin/build
+COPY --from=builder /app/target/release/rust /usr/local/bin/rust
 
 # Definir el comando de entrada
-CMD ["/usr/local/bin/build"]
+CMD ["/usr/local/bin/rust"]

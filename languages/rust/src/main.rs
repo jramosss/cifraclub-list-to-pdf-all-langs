@@ -1,6 +1,3 @@
-use std::io::Write;
-use std::thread::sleep;
-use std::time::Duration;
 use crate::pdf::html_to_pdf;
 use warp::Filter;
 
@@ -25,7 +22,6 @@ async fn main() {
         let result = scraper::scrape(url.parse().unwrap()).await;
         let port = 3030 + i as u16;
         serve_file(result.clone(), port).await;
-        // sleep(Duration::from_secs(15));
-        html_to_pdf(port).await.expect("TODO: panic message");
+        html_to_pdf(port).await;
     }
 }
