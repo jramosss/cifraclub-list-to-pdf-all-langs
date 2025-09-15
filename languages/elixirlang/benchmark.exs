@@ -1,11 +1,22 @@
 urls = [
-  # "https://www.cifraclub.com/musico/551928421/repertorio/favoritas/", # large
-  "https://www.cifraclub.com/musico/551928421/repertorio/12409416/" # small
+  "https://www.cifraclub.com/musico/551928421/repertorio/favoritas", # large
+  "https://www.cifraclub.com/musico/551928421/repertorio/12409416" # small
 ]
 
+# wtf is this syntax
+benchmark_results = for url <- urls do
+  {scrape_start_time, {html, total_songs}} = :timer.tc(Scraper, :scrape, [url])
+  number = String.split(url, "/") |> Enum.at(-1)
+  {pdf_start_time, _} = :timer.tc(Pdf, :generate, [html, "#{number}.pdf"])
 
-for url <- urls do
-  IO.puts("Scraping page: #{url}")
-  {start_time, response} = :timer.tc(Scraper, :scrape, url)
-  IO.puts("Time taken to scrape page: #{url} - #{start_time / 1000} ms")
+  benchmark_result = %{
+    scrape_time: scrape_start_time / 1000,
+    pdf_time: pdf_start_time / 1000,
+    total_songs: total_songs
+  }
+
+  # non explicit return and no option to use return, booo
+  benchmark_result
 end
+
+File.write!("benchmarks.json", Jason.encode!(benchmark_results))

@@ -2,6 +2,7 @@ defmodule Scraper do
   # Horrible typing system omg
   @spec get_page(String.t()) :: String.t()
   def get_page(url) do
+    # don't ask
     headers = [
       {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"},
       {"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
@@ -47,20 +48,19 @@ defmodule Scraper do
     Floki.find(page, "div[class=\"pages\"]") |> Enum.at(0) |> Floki.raw_html()
   end
 
-  @spec scrape_pages([String.t()]) :: String.t()
+  @spec scrape_pages([String.t()]) :: [String.t()]
   def scrape_pages(urls) do
     urls
     #                                                                   dope
     |> Task.async_stream(&scrape_page/1, max_concurrency: 10, timeout: 30_000)
     |> Enum.map(fn {:ok, result} -> result end)
-    |> Enum.join()
   end
 
-  @spec scrape(String.t()) :: String.t()
+  @spec scrape(String.t()) :: {String.t(), integer()}
   def scrape(list_url) do
     urls = get_urls_from_list(list_url)
-    IO.puts("Found #{length(urls)} URLs")
     # still not sure how imports works
-    scrape_pages(urls) |> Utils.generate_html()
+    html = scrape_pages(urls) |> Utils.generate_html()
+    {html, length(urls)}
   end
 end

@@ -43,5 +43,4 @@ defmodule Utils do
   def remove_tam_a4(content) do
     String.replace(content, "tam_a4", "")
   end
-
 end
