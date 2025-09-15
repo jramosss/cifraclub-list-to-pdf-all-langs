@@ -11,7 +11,7 @@ benchmark_results = for url <- urls do
 
   benchmark_result = %{
     scrape_time: scrape_start_time / 1000,
-    pdf_time: pdf_start_time / 1000,
+    pdf_generate_time: pdf_start_time / 1000,
     total_songs: total_songs
   }
 
