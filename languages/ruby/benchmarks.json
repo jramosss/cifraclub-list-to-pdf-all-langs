@@ -1,12 +1,12 @@
 [
   {
-    "amount_of_songs": 17,
-    "scrape_time": 692.048625,
-    "pdf_generate_time": 537.605167
+    "total_songs": 24,
+    "scrape_time": 818.5537499999999,
+    "pdf_generate_time": 618.171542
   },
   {
-    "amount_of_songs": 275,
-    "scrape_time": 4604.918821,
-    "pdf_generate_time": 4557.898669
+    "total_songs": 324,
+    "scrape_time": 5451.639739,
+    "pdf_generate_time": 7244.714753
   }
 ]

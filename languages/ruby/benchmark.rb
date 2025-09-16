@@ -23,7 +23,7 @@ def benchmark
     pdf_generate_end_time = Time.now
 
     results.push({
-      amount_of_songs: amount_of_songs,
+      total_songs: amount_of_songs,
       scrape_time: (scraper_end_time - scraper_start_time) * 1000,
       pdf_generate_time: (pdf_generate_end_time - pdf_generate_start_time) * 1000
     })
