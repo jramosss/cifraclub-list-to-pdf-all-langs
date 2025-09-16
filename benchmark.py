@@ -34,26 +34,35 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
             data_scraping[lang].append(benchmark.scrape_time if benchmark else 0)
             data_pdf[lang].append(benchmark.pdf_generate_time if benchmark else 0)
 
+    # Ordenar lenguajes por rendimiento promedio (menor tiempo = mejor rendimiento)
+    avg_scraping_times = {lang: np.mean(data_scraping[lang]) for lang in languages}
+    avg_pdf_times = {lang: np.mean(data_pdf[lang]) for lang in languages}
+
+    languages_sorted_scraping = sorted(languages, key=lambda lang: avg_scraping_times[lang])
+    languages_sorted_pdf = sorted(languages, key=lambda lang: avg_pdf_times[lang])
+
     x = np.arange(len(songs))
     bar_width = 0.1
 
     fig, axs = plt.subplots(1, 2, figsize=(14, 6))
 
-    for i, lang in enumerate(languages):
+    # Gráfico de scraping ordenado por rendimiento
+    for i, lang in enumerate(languages_sorted_scraping):
         axs[0].bar(x + i * bar_width, data_scraping[lang], bar_width, label=lang)
     axs[0].set_xlabel("Number of Songs")
     axs[0].set_ylabel("Time (ms)")
-    axs[0].set_title("Scraping Performance Comparison")
-    axs[0].set_xticks(x + bar_width * (len(languages) / 2 - 0.5))
+    axs[0].set_title("Scraping Performance Comparison (Sorted by Performance)")
+    axs[0].set_xticks(x + bar_width * (len(languages_sorted_scraping) / 2 - 0.5))
     axs[0].set_xticklabels(songs)
     axs[0].legend()
 
-    for i, lang in enumerate(languages):
+    # Gráfico de PDF ordenado por rendimiento
+    for i, lang in enumerate(languages_sorted_pdf):
         axs[1].bar(x + i * bar_width, data_pdf[lang], bar_width, label=lang)
     axs[1].set_xlabel("Number of Songs")
     axs[1].set_ylabel("Time (ms)")
-    axs[1].set_title("PDF Generation Performance Comparison")
-    axs[1].set_xticks(x + bar_width * (len(languages) / 2 - 0.5))
+    axs[1].set_title("PDF Generation Performance Comparison (Sorted by Performance)")
+    axs[1].set_xticks(x + bar_width * (len(languages_sorted_pdf) / 2 - 0.5))
     axs[1].set_xticklabels(songs)
     axs[1].legend()
 
