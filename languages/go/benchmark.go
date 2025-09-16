@@ -2,20 +2,22 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
 )
 
 type result struct {
-	total_songs       int
-	scrape_time       time.Duration
-	pdf_generate_time time.Duration
+	TotalSongs      int           `json:"total_songs"`
+	ScrapeTime      time.Duration `json:"scrape_time"`
+	PdfGenerateTime time.Duration `json:"pdf_generate_time"`
 }
 
 func saveResults(results []result) error {
 	file, err := os.Create("benchmarks.json")
 	if err != nil {
+		log.Fatalf("could not create file: %v", err)
 		return err
 	}
 	defer file.Close()
@@ -31,7 +33,7 @@ func main() {
 		"https://cifraclub.com/musico/551928421/repertorio/12409416/",  // small
 	}
 
-	results := make([]result, len(urls))
+	var results []result
 
 	for index, url := range urls {
 		scrapeStart := time.Now()
@@ -43,13 +45,13 @@ func main() {
 		scrape_time := time.Since(scrapeStart)
 
 		pdfStart := time.Now()
-		createPDF(htmlContent, "output"+string(index)+".pdf")
+		createPDF(htmlContent, fmt.Sprintf("output%d.pdf", index))
 		pdf_generate_time := time.Since(pdfStart)
 
 		results = append(results, result{
-			total_songs:       len(songs),
-			scrape_time:       scrape_time,
-			pdf_generate_time: pdf_generate_time,
+			TotalSongs:      len(songs),
+			ScrapeTime:      scrape_time / time.Millisecond,
+			PdfGenerateTime: pdf_generate_time / time.Millisecond,
 		})
 	}
 

@@ -1,1 +1,12 @@
-[{"scrape_time":315,"pdf_generate_time":956,"total_songs":17},{"scrape_time":503,"pdf_generate_time":349,"total_songs":275, "note": "THIS IS FAKE DATA, DO NOT USE"}]
+[
+  {
+    "total_songs": 324,
+    "scrape_time": 816,
+    "pdf_generate_time": 12163
+  },
+  {
+    "total_songs": 24,
+    "scrape_time": 251,
+    "pdf_generate_time": 667
+  }
+]
