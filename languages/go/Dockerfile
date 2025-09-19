@@ -1,35 +1,26 @@
-# Use the official Playwright image with Go support
-FROM mcr.microsoft.com/playwright:v1.47.0-focal
-
-# Install Go
-RUN apt-get update && apt-get install -y wget && \
-    wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz && \
-    rm go1.22.2.linux-amd64.tar.gz
-
-# Set Go environment variables
-ENV PATH="/usr/local/go/bin:${PATH}"
-ENV GOPATH="/go"
-ENV GOBIN="/go/bin"
-
-# Set working directory
-WORKDIR /app
-
-# Copy go mod files
-COPY go.mod go.sum ./
-
-# Download dependencies
+# Stage 1: Modules caching
+FROM golang:1.22 AS modules
+COPY go.mod go.sum /modules/
+WORKDIR /modules
 RUN go mod download
 
-# Copy source code
-COPY . .
+# Stage 2: Build
+FROM golang:1.22 AS builder
+COPY --from=modules /go/pkg /go/pkg
+COPY . /workdir
+WORKDIR /workdir
+# Install playwright cli with right version for later use
+RUN PWGO_VER=$(grep -oE "playwright-go v\S+" /workdir/go.mod | sed 's/playwright-go //g') \
+    && go install github.com/playwright-community/playwright-go/cmd/playwright@${PWGO_VER}
+# Build your app
+RUN GOOS=linux GOARCH=amd64 go build -o /bin/myapp
 
-# Install playwright for Go
-RUN go install github.com/playwright-community/playwright-go/cmd/playwright@latest
-RUN playwright install --with-deps
-
-# Build the application
-RUN go build -o cifraclub-list-to-pdf
-
-# Run the application
-CMD ["./cifraclub-list-to-pdf"]
+# Stage 3: Final
+FROM ubuntu:noble
+COPY --from=builder /go/bin/playwright /bin/myapp /
+RUN apt-get update && apt-get install -y ca-certificates tzdata \
+    # Install dependencies and all browsers (or specify one)
+    && /playwright install --with-deps \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+CMD ["/myapp"]
