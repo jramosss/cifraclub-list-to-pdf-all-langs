@@ -13,7 +13,6 @@ RUN apt update -qq \
       libgconf-2-4 \
       libxss1 \
       libxtst6 \
-      python \
       g++ \
       build-essential \
       chromium \
