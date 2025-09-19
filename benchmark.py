@@ -1,12 +1,13 @@
 import argparse
+import concurrent.futures
 import json
 import os
 import subprocess
-import matplotlib.pyplot as plt
-import numpy as np
 from dataclasses import dataclass
 from typing import List
-import concurrent.futures
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 @dataclass
@@ -70,12 +71,15 @@ def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str) -> Non
     plt.savefig(filepath)
 
 
-def run_benchmark(language: str, generate: bool) -> List[Benchmark]:
+def run_benchmark(language: str, generate: bool, local: bool = False, verbose: bool = False) -> List[Benchmark]:
     if generate:
         print(f"Running benchmarks for {language}")
+        local_flag = " --local" if local else ""
         subprocess.run(
-            f"cd languages/{language} && chmod +x run_benchmark.sh && bash run_benchmark.sh",
+            f"cd languages/{language} && chmod +x run_benchmark.sh && bash run_benchmark.sh{local_flag}",
             shell=True,
+            stdout=subprocess.DEVNULL if not verbose else None,
+            stderr=subprocess.DEVNULL if not verbose else None,
         )
     results = json.load(open(f"languages/{language}/benchmarks.json"))
     return [
@@ -89,7 +93,7 @@ def run_benchmark(language: str, generate: bool) -> List[Benchmark]:
     ]
 
 
-def get_benchmarks(*, generate: bool = True):
+def get_benchmarks(*, generate: bool = True, local: bool = False, verbose: bool = False):
     folders = list(
         filter(lambda x: os.path.isdir(f"languages/{x}"), os.listdir("languages"))
     )
@@ -97,7 +101,7 @@ def get_benchmarks(*, generate: bool = True):
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [
-            executor.submit(run_benchmark, language, generate) for language in folders
+            executor.submit(run_benchmark, language, generate, local, verbose) for language in folders
         ]
         for future in concurrent.futures.as_completed(futures):
             benchmarks.extend(future.result())
@@ -106,15 +110,21 @@ def get_benchmarks(*, generate: bool = True):
 
 
 if __name__ == "__main__":
-    # add CLI options to --plot-only
+    # add CLI options to --plot-only and --local
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
         "--plot-only", action="store_true", help="Plot the benchmark results only"
     )
+    parser.add_argument(
+        "--local", action="store_true", help="Run benchmarks locally instead of using Docker"
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Run benchmarks with verbose output"
+    )
 
     args = parser.parse_args()
 
-    benchmarks = get_benchmarks(generate=(not args.plot_only))
+    benchmarks = get_benchmarks(generate=(not args.plot_only), local=args.local, verbose=args.verbose)
 
     plot_benchmark_comparison(benchmarks, "comparision.png")

@@ -14,7 +14,6 @@ def test_benchmark_structure():
     benchmarks = [f"languages/{language}/benchmarks.json" for language in languages_dir]
     for benchmark in benchmarks:
         j: list[dict[str, int]] = json.load(open(benchmark))
-        print(benchmark)
         assert len(j) == 2
         assert "total_songs" in j[0]
         assert "scrape_time" in j[0]

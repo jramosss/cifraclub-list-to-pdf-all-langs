@@ -12,6 +12,7 @@ GEM
     nokogiri (1.13.10)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
+    parallel (1.27.0)
     puppeteer-ruby (0.45.6)
       concurrent-ruby (>= 1.1, < 1.4)
       mime-types (>= 3.0)
@@ -27,6 +28,7 @@ PLATFORMS
 
 DEPENDENCIES
   nokogiri
+  parallel
   puppeteer-ruby
 
 BUNDLED WITH
