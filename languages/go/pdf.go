@@ -16,6 +16,12 @@ func createPDF(htmlContent string, filePath string) {
 
 	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
 		Headless: playwright.Bool(true),
+		Args: []string{
+			"--no-sandbox",
+			"--disable-setuid-sandbox",
+			"--disable-gpu",
+			"--disable-dev-shm-usage",
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not launch browser: %v", err)

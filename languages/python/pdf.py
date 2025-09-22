@@ -1,8 +1,8 @@
-from playwright.async_api import async_playwright, Playwright
+from playwright.async_api import Playwright, async_playwright
 
 
 async def playwright_pdf_generator(playwright: Playwright, html: str, pdf_path: str):
-    browser = await playwright.chromium.launch()
+    browser = await playwright.chromium.launch(headless=True)
     page = await browser.new_page()
     await page.set_content(html)
     await page.pdf(path=pdf_path, format="A4")
