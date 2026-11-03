@@ -36,7 +36,7 @@ public class Scraper {
 
     // HOW CAN IT BE SO COMPLICATED TO ADD A DEPENDENCYYYY AAAAAAAA
     private Document getJsoupObject(String url) throws IOException {
-        return Jsoup.connect(url).get();
+        return Jsoup.connect(url).timeout(10*1000).get();
     }
 
     private String[] getUrlsFromList(String url) throws IOException {
@@ -51,7 +51,7 @@ public class Scraper {
     private String scrapePage(String url) throws IOException {
         var doc = getJsoupObject(url);
         var page = doc.selectFirst("div[class=pages]");
-        assert page != null;
+        if (page == null) throw new IOException("Page not found");
         var html = page.outerHtml();
         html = new String(html.getBytes(StandardCharsets.UTF_8));
         html = removeImgTags(html);
@@ -68,7 +68,7 @@ public class Scraper {
     private String[] scrapeSongs(String[] urls) throws IOException {
         int numUrls = urls.length;
         ExecutorService executor = Executors.newFixedThreadPool(
-                Math.min(numUrls, 10)
+                Math.min(numUrls, 4)
         );
 
         List<CompletableFuture<String>> futures = new ArrayList<>();

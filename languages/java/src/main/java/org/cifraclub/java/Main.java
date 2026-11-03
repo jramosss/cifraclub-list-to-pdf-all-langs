@@ -25,6 +25,7 @@ public class Main {
         for (String url : urls) {
             var scraper = new Scraper();
             var scrapingResult = scraper.scrape(url);
+            System.out.println("Scraped " + scrapingResult.amountOfSongs + " songs from " + url);
 
             var pdfStart = System.currentTimeMillis();
             Pdf.htmlToPdf(scrapingResult.html, "test.pdf");
