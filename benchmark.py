@@ -15,14 +15,6 @@ class Benchmark:
     benchmark_type: str  # "tiny" or "large"
 
 
-def is_biased_csharp_benchmark(language: str, benchmark_type: str, scrape_time: int, pdf_generate_time: int) -> bool:
-    return (
-        language == "csharp"
-        and benchmark_type == "large"
-        and (scrape_time < 1000 or pdf_generate_time < 1000)
-    )
-
-
 def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str, benchmark_type: str) -> None:
     import matplotlib.pyplot as plt
     import numpy as np
@@ -116,17 +108,11 @@ def run_benchmark(language: str, generate: bool, local: bool = False, verbose: b
             if benchmark_result["total_songs"] > 100:  # Arbitrary threshold
                 benchmark_type = "large"
         
-        scrape_time = benchmark_result["scrape_time"]
-        pdf_generate_time = benchmark_result["pdf_generate_time"]
-
-        if is_biased_csharp_benchmark(language, benchmark_type, scrape_time, pdf_generate_time):
-            continue
-
         benchmarks.append(Benchmark(
             language,
             benchmark_result["total_songs"],
-            scrape_time,
-            pdf_generate_time,
+            benchmark_result["scrape_time"],
+            benchmark_result["pdf_generate_time"],
             benchmark_type
         ))
     

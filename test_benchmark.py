@@ -4,7 +4,7 @@ from pathlib import Path
 from benchmark import run_benchmark
 
 
-def test_run_benchmark_skips_biased_large_csharp_result(tmp_path, monkeypatch):
+def test_run_benchmark_keeps_csharp_large_result(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     csharp_dir = Path("languages/csharp")
     csharp_dir.mkdir(parents=True)
@@ -18,9 +18,9 @@ def test_run_benchmark_skips_biased_large_csharp_result(tmp_path, monkeypatch):
 
     benchmarks = run_benchmark("csharp", generate=False)
 
-    assert len(benchmarks) == 1
-    assert benchmarks[0].benchmark_type == "tiny"
-    assert benchmarks[0].total_songs == 24
+    assert len(benchmarks) == 2
+    assert benchmarks[1].benchmark_type == "large"
+    assert benchmarks[1].total_songs == 327
 
 
 def test_run_benchmark_keeps_non_csharp_large_result(tmp_path, monkeypatch):
