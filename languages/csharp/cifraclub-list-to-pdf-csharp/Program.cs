@@ -12,8 +12,8 @@ async Task<BenchmarkResults> GenerateReport(string url, int index) {
 
     return new BenchmarkResults
     {
-        scrape_time = (scrapeEnd - scrapeStart).Milliseconds,
-        pdf_generate_time = (pdfGenerateEnd - pdfGenerateStart).Milliseconds,
+        scrape_time = (int)(scrapeEnd - scrapeStart).TotalMilliseconds,
+        pdf_generate_time = (int)(pdfGenerateEnd - pdfGenerateStart).TotalMilliseconds,
         total_songs = total_songs
     };
 }
@@ -37,4 +37,3 @@ async Task Main()
 }
 
 await Main();
-

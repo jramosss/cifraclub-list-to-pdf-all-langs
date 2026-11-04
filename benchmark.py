@@ -6,10 +6,6 @@ import subprocess
 from dataclasses import dataclass
 from typing import List
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-
 @dataclass
 class Benchmark:
     language: str
@@ -20,6 +16,9 @@ class Benchmark:
 
 
 def plot_benchmark_comparison(benchmarks: List[Benchmark], filepath: str, benchmark_type: str) -> None:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
     # Filter benchmarks by type
     filtered_benchmarks = [b for b in benchmarks if b.benchmark_type == benchmark_type]
     
